@@ -12,10 +12,15 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoReplacedEntityRenderer;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class ReplacedCitizenRenderer
         extends GeoReplacedEntityRenderer<AbstractEntityCitizen, ReplacedCitizenAnim> {
+
+    // Per-entity swing window — renderer is a singleton so this must be a map.
+    private final Map<Integer, Integer> swingEndTickMap = new HashMap<>();
 
     public ReplacedCitizenRenderer(EntityRendererProvider.Context ctx) {
         super(ctx, new ReplacedCitizenModel(), ReplacedCitizenAnim.INSTANCE);
@@ -24,26 +29,34 @@ public class ReplacedCitizenRenderer
     @Override
     public void render(AbstractEntityCitizen entity, float entityYaw, float partialTick,
                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        // isFemale() and getCitizenDataView() both read synced entity data — always valid client-side.
-        // getCitizenData() is null on the client, so we use getCitizenDataView() for the profession.
+        int id = entity.getId();
+
+        // Model / texture selection — both read synced entity data, always valid client-side.
         ReplacedCitizenModel.activeGender     = entity.isFemale() ? "female" : "male";
         ReplacedCitizenModel.activeProfession = professionName(entity.getCitizenDataView());
 
-        ReplacedCitizenAnim.INSTANCE.moving =
-                entity.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4;
+        // Animation state — per-entity, written before GeckoLib reads them.
+        ReplacedCitizenAnim.INSTANCE.movingMap.put(
+                id, entity.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4);
+
+        ReplacedCitizenAnim.INSTANCE.sleepingMap.put(id, entity.isSleeping());
+
+        if (entity.swinging) {
+            swingEndTickMap.put(id, entity.tickCount + 20);
+        }
+        ReplacedCitizenAnim.INSTANCE.swingRemainingMap.put(
+                id, Math.max(0, swingEndTickMap.getOrDefault(id, 0) - entity.tickCount));
+
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
     /**
      * Derives a short profession key from the data view's job string.
-     *
-     * ICitizenDataView.getJob() returns a synced String whose format may vary:
-     *   full class name  → "com.minecolonies.core.colony.jobs.JobAlchemist"
-     *   simple class     → "JobAlchemist"
-     *   registry key     → "minecolonies:alchemist"
-     *   already clean    → "alchemist"
-     *
-     * All four cases produce "alchemist", which maps to the asset filenames.
+     * Handles all common formats:
+     *   "com.minecolonies.core.colony.jobs.JobAlchemist" → "alchemist"
+     *   "JobAlchemist"                                   → "alchemist"
+     *   "minecolonies:alchemist"                         → "alchemist"
+     *   "alchemist"                                      → "alchemist"
      */
     private static String professionName(@Nullable ICitizenDataView dataView) {
         if (dataView == null) return "unemployed";
@@ -53,18 +66,12 @@ public class ReplacedCitizenRenderer
     }
 
     private static String cleanJobString(String raw) {
-        // Strip package prefix: "com.example.jobs.JobAlchemist" → "JobAlchemist"
         int lastDot = raw.lastIndexOf('.');
         String simple = (lastDot >= 0 ? raw.substring(lastDot + 1) : raw)
                 .toLowerCase(Locale.ROOT);
-
-        // Strip registry namespace: "minecolonies:alchemist" → "alchemist"
         int colon = simple.indexOf(':');
         if (colon >= 0) simple = simple.substring(colon + 1);
-
-        // Strip conventional "job" prefix: "jobalchemist" → "alchemist"
         if (simple.startsWith("job")) simple = simple.substring(3);
-
         return simple.isBlank() ? "unemployed" : simple;
     }
 
