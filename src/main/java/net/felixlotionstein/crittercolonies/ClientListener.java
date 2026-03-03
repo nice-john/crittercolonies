@@ -1,7 +1,6 @@
 package net.felixlotionstein.crittercolonies;
 
 import com.minecolonies.api.entity.ModEntities;
-import net.felixlotionstein.crittercolonies.client.renderer.entity.ReplacedBarbarianRenderer;
 import net.felixlotionstein.crittercolonies.client.renderer.entity.ReplacedCitizenRenderer;
 import net.felixlotionstein.crittercolonies.client.renderer.entity.ReplacedPirateRenderer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,7 +15,6 @@ public final class ClientListener {
     @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.CAMP_PIRATE, ReplacedPirateRenderer::new);
-        event.registerEntityRenderer(ModEntities.CAMP_BARBARIAN, ReplacedBarbarianRenderer::new);
         event.registerEntityRenderer(ModEntities.CITIZEN, ReplacedCitizenRenderer::new);
     }
 }

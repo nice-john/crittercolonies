@@ -13,12 +13,12 @@
 			"bones": [
 				{
 					"name": "whole",
-					"pivot": [0, 9, 0]
+					"pivot": [0, 8, 0]
 				},
 				{
 					"name": "rightfin",
 					"parent": "whole",
-					"pivot": [0, 9, 0],
+					"pivot": [0, 8, 0],
 					"cubes": [
 						{"origin": [-1, 7, -4], "size": [2, 3, 0], "pivot": [0, 7, -3], "rotation": [-37.5, 0, 0], "uv": [20, 3]}
 					]
@@ -26,12 +26,12 @@
 				{
 					"name": "handfins",
 					"parent": "whole",
-					"pivot": [0, 9, 0]
+					"pivot": [0, 8, 0]
 				},
 				{
 					"name": "leftfin",
 					"parent": "handfins",
-					"pivot": [0, 9, 0],
+					"pivot": [0, 8, 0],
 					"cubes": [
 						{"origin": [-1, 7, 4], "size": [2, 3, 0], "pivot": [0, 7, 3], "rotation": [37.5, 0, 0], "uv": [20, 3]}
 					]
