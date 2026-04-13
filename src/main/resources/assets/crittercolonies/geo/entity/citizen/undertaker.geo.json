@@ -12,7 +12,12 @@
 			},
 			"bones": [
 				{
+					"name": "wholebody",
+					"pivot": [0, 0, 0]
+				},
+				{
 					"name": "feet",
+					"parent": "wholebody",
 					"pivot": [0, 3, 0]
 				},
 				{
@@ -33,20 +38,26 @@
 				},
 				{
 					"name": "torso",
+					"parent": "wholebody",
 					"pivot": [0, 6, 0],
 					"cubes": [
-						{"origin": [-5, 2, -5], "size": [10, 10, 9], "uv": [0, 0]},
-						{"origin": [-3, 9, 4], "size": [6, 3, 1], "uv": [61, 2]}
+						{"origin": [-5, 2, -5], "size": [10, 10, 9], "uv": [0, 0]}
 					]
 				},
 				{
+					"name": "bag",
+					"parent": "torso",
+					"pivot": [0, 6, 0]
+				},
+				{
 					"name": "arms",
+					"parent": "wholebody",
 					"pivot": [0, 12, 0]
 				},
 				{
 					"name": "rightarm",
 					"parent": "arms",
-					"pivot": [5, 12, 0],
+					"pivot": [5, 11, 0],
 					"cubes": [
 						{"origin": [4, 4, -1], "size": [2, 7, 2], "uv": [38, 13]}
 					]
@@ -56,16 +67,22 @@
 					"parent": "arms",
 					"pivot": [-5, 12, 0],
 					"cubes": [
-						{"origin": [-6, 4, -1], "size": [2, 7, 2], "uv": [38, 28]}
+						{"origin": [-6, 4, -1], "size": [2, 7, 2], "pivot": [-5, 11, 0], "rotation": [0, 0, 5], "uv": [38, 28]}
 					]
 				},
 				{
-					"name": "liquid",
+					"name": "tool",
 					"parent": "leftarm",
-					"pivot": [-5, 8, 7]
+					"pivot": [-5, 13, -1],
+					"cubes": [
+						{"origin": [-6, 4, -7], "size": [1, 1, 12], "uv": [64, 24]},
+						{"origin": [-7, 4, 5], "size": [3, 1, 4], "uv": [65, 38]},
+						{"origin": [-7, 4, -8], "size": [3, 1, 1], "uv": [80, 41]}
+					]
 				},
 				{
 					"name": "head",
+					"parent": "wholebody",
 					"pivot": [0, 0, 0],
 					"cubes": [
 						{"origin": [-5, 12, -4], "size": [10, 9, 7], "uv": [0, 19]}
@@ -111,13 +128,11 @@
 				{
 					"name": "hat",
 					"parent": "head",
-					"pivot": [0, -1, 0],
-					"cubes": [
-						{"origin": [-6, 15.5, -6], "size": [11, 4, 10], "uv": [1, 45]}
-					]
+					"pivot": [0, 21, 0]
 				},
 				{
 					"name": "tail",
+					"parent": "wholebody",
 					"pivot": [0, 0, 0],
 					"cubes": [
 						{"origin": [-2, 3, -9], "size": [4, 3, 4], "uv": [38, 0]}

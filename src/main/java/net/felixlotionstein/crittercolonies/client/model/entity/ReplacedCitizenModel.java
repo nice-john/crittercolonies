@@ -18,15 +18,19 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
     /** Profession name used when a profession's asset file is missing. */
     private static final String FALLBACK = "unemployed";
 
+    /** Single base texture shared by all citizens — overlays handle the visual variation. */
+    private static final ResourceLocation BASE_TEXTURE = new ResourceLocation(
+            Crittercolonies.MODID, "textures/entity/citizen/citizen.png");
+
     /**
      * Set by ReplacedCitizenRenderer before each render call.
      * Safe as plain statics because entity rendering is single-threaded.
      *
-     * Model    → one per profession (gender-neutral):
+     * Model     → one per profession (gender-neutral):
      *   geo/entity/citizen/{profession}.geo.json
+     *   fallback: geo/entity/citizen.geo.json
      *
-     * Texture  → one per profession + gender:
-     *   textures/entity/citizen/{profession}_{gender}.png
+     * Texture   → always citizen.png; overlays supply profession/gender variation.
      *
      * Animation → one per profession (gender-neutral):
      *   animations/entity/citizen/{profession}.animation.json
@@ -35,10 +39,7 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
     public static String activeProfession = "unemployed";
 
     // Caches so we don't allocate new ResourceLocations every frame.
-    // Entries are resolved on first use and include fallback logic, so
-    // each entry already points to a file that is guaranteed to exist.
     private static final Map<String, ResourceLocation> MODEL_CACHE     = new HashMap<>();
-    private static final Map<String, ResourceLocation> TEXTURE_CACHE   = new HashMap<>();
     private static final Map<String, ResourceLocation> ANIMATION_CACHE = new HashMap<>();
 
     public ReplacedCitizenModel() {
@@ -71,27 +72,14 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
             if (resourceExists(loc)) return loc;
 
             LOGGER.warn("[CritterColonies] Missing geo file for profession '{}', " +
-                    "falling back to '{}'.", p, FALLBACK);
-            return new ResourceLocation(Crittercolonies.MODID,
-                    "geo/entity/citizen/" + FALLBACK + ".geo.json");
+                    "falling back to citizen.geo.json.", p);
+            return new ResourceLocation(Crittercolonies.MODID, "geo/entity/citizen.geo.json");
         });
     }
 
     @Override
     public ResourceLocation getTextureResource(ReplacedCitizenAnim animatable) {
-        // Key includes gender so male/female variants are cached independently.
-        String key    = activeProfession + "_" + activeGender;
-        String gender = activeGender; // capture for use inside lambda
-        return TEXTURE_CACHE.computeIfAbsent(key, k -> {
-            ResourceLocation loc = new ResourceLocation(Crittercolonies.MODID,
-                    "textures/entity/citizen/" + k + ".png");
-            if (resourceExists(loc)) return loc;
-
-            LOGGER.warn("[CritterColonies] Missing texture file '{}', " +
-                    "falling back to '{}'.", k, FALLBACK + "_" + gender);
-            return new ResourceLocation(Crittercolonies.MODID,
-                    "textures/entity/citizen/" + FALLBACK + "_" + gender + ".png");
-        });
+        return BASE_TEXTURE;
     }
 
     @Override
