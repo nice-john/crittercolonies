@@ -24,9 +24,11 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
      *
      * Model    → one per profession (gender-neutral):
      *   geo/entity/citizen/{profession}.geo.json
+     *   falls back to geo/entity/citizen.geo.json if missing
      *
-     * Texture  → one per profession + gender:
-     *   textures/entity/citizen/{profession}_{gender}.png
+     * Texture  → shared base for all citizens:
+     *   textures/entity/citizen/citizen.png
+     *   (visual variation is handled entirely by CitizenOverlayLayer)
      *
      * Animation → one per profession (gender-neutral):
      *   animations/entity/citizen/{profession}.animation.json
@@ -34,15 +36,20 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
     public static String activeGender     = "male";
     public static String activeProfession = "unemployed";
 
+    /** Shared base texture applied to every citizen before overlays are drawn. */
+    private static final ResourceLocation BASE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
+                    "textures/entity/citizen/citizen.png");
+
     // Caches so we don't allocate new ResourceLocations every frame.
     // Entries are resolved on first use and include fallback logic, so
     // each entry already points to a file that is guaranteed to exist.
     private static final Map<String, ResourceLocation> MODEL_CACHE     = new HashMap<>();
-    private static final Map<String, ResourceLocation> TEXTURE_CACHE   = new HashMap<>();
     private static final Map<String, ResourceLocation> ANIMATION_CACHE = new HashMap<>();
 
     public ReplacedCitizenModel() {
-        super(new ResourceLocation(Crittercolonies.MODID, "citizen/" + FALLBACK));
+        // "citizen" resolves to geo/entity/citizen.geo.json via DefaultedEntityGeoModel
+        super(ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID, "citizen"));
     }
 
     // -------------------------------------------------------------------------
@@ -66,44 +73,34 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
     @Override
     public ResourceLocation getModelResource(ReplacedCitizenAnim animatable) {
         return MODEL_CACHE.computeIfAbsent(activeProfession, p -> {
-            ResourceLocation loc = new ResourceLocation(Crittercolonies.MODID,
+            ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
                     "geo/entity/citizen/" + p + ".geo.json");
             if (resourceExists(loc)) return loc;
 
             LOGGER.warn("[CritterColonies] Missing geo file for profession '{}', " +
-                    "falling back to '{}'.", p, FALLBACK);
-            return new ResourceLocation(Crittercolonies.MODID,
-                    "geo/entity/citizen/" + FALLBACK + ".geo.json");
+                    "falling back to citizen.geo.json.", p);
+            return ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
+                    "geo/entity/citizen.geo.json");
         });
     }
 
     @Override
     public ResourceLocation getTextureResource(ReplacedCitizenAnim animatable) {
-        // Key includes gender so male/female variants are cached independently.
-        String key    = activeProfession + "_" + activeGender;
-        String gender = activeGender; // capture for use inside lambda
-        return TEXTURE_CACHE.computeIfAbsent(key, k -> {
-            ResourceLocation loc = new ResourceLocation(Crittercolonies.MODID,
-                    "textures/entity/citizen/" + k + ".png");
-            if (resourceExists(loc)) return loc;
-
-            LOGGER.warn("[CritterColonies] Missing texture file '{}', " +
-                    "falling back to '{}'.", k, FALLBACK + "_" + gender);
-            return new ResourceLocation(Crittercolonies.MODID,
-                    "textures/entity/citizen/" + FALLBACK + "_" + gender + ".png");
-        });
+        // All citizens share one base texture. Visual variation comes entirely
+        // from the overlay layers rendered on top by CitizenOverlayLayer.
+        return BASE_TEXTURE;
     }
 
     @Override
     public ResourceLocation getAnimationResource(ReplacedCitizenAnim animatable) {
         return ANIMATION_CACHE.computeIfAbsent(activeProfession, p -> {
-            ResourceLocation loc = new ResourceLocation(Crittercolonies.MODID,
+            ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
                     "animations/entity/citizen/" + p + ".animation.json");
             if (resourceExists(loc)) return loc;
 
             LOGGER.warn("[CritterColonies] Missing animation file for profession '{}', " +
                     "falling back to '{}'.", p, FALLBACK);
-            return new ResourceLocation(Crittercolonies.MODID,
+            return ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
                     "animations/entity/citizen/" + FALLBACK + ".animation.json");
         });
     }

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.felixlotionstein.crittercolonies.anim.ReplacedCitizenAnim;
 import net.felixlotionstein.crittercolonies.client.model.entity.ReplacedCitizenModel;
+import net.felixlotionstein.crittercolonies.client.renderer.layer.CitizenOverlayLayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +25,7 @@ public class ReplacedCitizenRenderer
 
     public ReplacedCitizenRenderer(EntityRendererProvider.Context ctx) {
         super(ctx, new ReplacedCitizenModel(), ReplacedCitizenAnim.INSTANCE);
+        addRenderLayer(new CitizenOverlayLayer(this));
     }
 
     @Override

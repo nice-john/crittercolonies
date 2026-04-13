@@ -7,6 +7,6 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class ReplacedPirateModel extends DefaultedEntityGeoModel<ReplacedPirateAnim> {
     public ReplacedPirateModel() {
-        super(new ResourceLocation(Crittercolonies.MODID, "pirate"));
+        super(ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID, "pirate"));
     }
 }

@@ -2,14 +2,14 @@ package net.felixlotionstein.crittercolonies.anim;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import software.bernie.geckolib.animatable.GeoReplacedEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.Animation.LoopType;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.Animation.LoopType;
-import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Map;
@@ -23,8 +23,7 @@ public final class ReplacedPirateAnim implements GeoReplacedEntity {
     private static final RawAnimation ATTACK = RawAnimation.begin().then("attack", LoopType.PLAY_ONCE);
 
     // Per-entity maps so each pirate animates independently.
-    // Key = entity ID (Entity#getId()). Written by ReplacedPirateRenderer each frame.
-    public final Map<Integer, Boolean> movingMap       = new ConcurrentHashMap<>();
+    public final Map<Integer, Boolean> movingMap          = new ConcurrentHashMap<>();
     public final Map<Integer, Integer> attackRemainingMap = new ConcurrentHashMap<>();
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -33,13 +32,12 @@ public final class ReplacedPirateAnim implements GeoReplacedEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "walk_controller", 5, state -> {
-            // DataTickets.ENTITY gives us the actual pirate being rendered right now.
             int id = state.getData(DataTickets.ENTITY).getId();
             int remaining = INSTANCE.attackRemainingMap.getOrDefault(id, 0);
             boolean moving = INSTANCE.movingMap.getOrDefault(id, false);
 
-            if (remaining > 0)  return state.setAndContinue(ATTACK);
-            if (moving)         return state.setAndContinue(WALK);
+            if (remaining > 0) return state.setAndContinue(ATTACK);
+            if (moving)        return state.setAndContinue(WALK);
             return state.setAndContinue(IDLE);
         }));
     }
@@ -51,6 +49,8 @@ public final class ReplacedPirateAnim implements GeoReplacedEntity {
 
     @Override
     public EntityType<?> getReplacingEntityType() {
-        return ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("minecolonies", "camppirate"));
+        return BuiltInRegistries.ENTITY_TYPE
+                .getOptional(ResourceLocation.fromNamespaceAndPath("minecolonies", "camppirate"))
+                .orElseThrow();
     }
 }
