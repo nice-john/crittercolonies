@@ -1,8 +1,7 @@
 package net.felixlotionstein.crittercolonies.anim;
 
-import net.minecraft.resources.ResourceLocation;
+import com.minecolonies.api.entity.ModEntities;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import software.bernie.geckolib.animatable.GeoReplacedEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -49,8 +48,6 @@ public final class ReplacedPirateAnim implements GeoReplacedEntity {
 
     @Override
     public EntityType<?> getReplacingEntityType() {
-        return BuiltInRegistries.ENTITY_TYPE
-                .getOptional(ResourceLocation.fromNamespaceAndPath("minecolonies", "camppirate"))
-                .orElseThrow();
+        return ModEntities.CAMP_PIRATE;
     }
 }

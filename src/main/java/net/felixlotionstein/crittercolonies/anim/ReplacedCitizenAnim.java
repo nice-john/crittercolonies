@@ -1,8 +1,7 @@
 package net.felixlotionstein.crittercolonies.anim;
 
-import net.minecraft.resources.ResourceLocation;
+import com.minecolonies.api.entity.ModEntities;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import software.bernie.geckolib.animatable.GeoReplacedEntity;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -50,8 +49,6 @@ public final class ReplacedCitizenAnim implements GeoReplacedEntity {
 
     @Override
     public EntityType<?> getReplacingEntityType() {
-        return BuiltInRegistries.ENTITY_TYPE
-                .getOptional(ResourceLocation.fromNamespaceAndPath("minecolonies", "citizen"))
-                .orElseThrow();
+        return ModEntities.CITIZEN;
     }
 }

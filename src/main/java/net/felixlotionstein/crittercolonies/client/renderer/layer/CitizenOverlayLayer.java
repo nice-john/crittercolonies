@@ -102,7 +102,7 @@ public class CitizenOverlayLayer extends GeoRenderLayer<ReplacedCitizenAnim> {
             this.renderer.reRender(bakedModel, poseStack, bufferSource, animatable,
                     overlayType, overlayBuf,
                     partialTick, packedLight, packedOverlay,
-                    1f, 1f, 1f, 1f);
+                    0xFFFFFFFF);
             poseStack.popPose();
         });
     }
@@ -113,7 +113,7 @@ public class CitizenOverlayLayer extends GeoRenderLayer<ReplacedCitizenAnim> {
      */
     private static Optional<ResourceLocation> resolve(String key) {
         return CACHE.computeIfAbsent(key, k -> {
-            ResourceLocation loc = new ResourceLocation(Crittercolonies.MODID,
+            ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
                     "textures/entity/citizen/" + k + "_overlay.png");
             return Minecraft.getInstance().getResourceManager()
                     .getResource(loc).isPresent()
