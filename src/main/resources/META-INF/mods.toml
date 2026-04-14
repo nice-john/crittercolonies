@@ -71,5 +71,5 @@ side = "CLIENT"
 modId = "minecolonies"
 mandatory = true
 versionRange = "[1.1.8,)"
-ordering = "NONE"
+ordering = "AFTER"
 side = "CLIENT"
