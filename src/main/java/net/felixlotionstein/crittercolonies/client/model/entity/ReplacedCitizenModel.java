@@ -22,16 +22,17 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
      * Set by ReplacedCitizenRenderer before each render call.
      * Safe as plain statics because entity rendering is single-threaded.
      *
-     * Model    → one per profession (gender-neutral):
+     * Model     → one per profession (gender-neutral):
      *   geo/entity/citizen/{profession}.geo.json
-     *   falls back to geo/entity/citizen.geo.json if missing
+     *   fallback: geo/entity/citizen/unemployed.geo.json
      *
-     * Texture  → shared base for all citizens:
+     * Texture   → shared base for all citizens:
      *   textures/entity/citizen/citizen.png
      *   (visual variation is handled entirely by CitizenOverlayLayer)
      *
      * Animation → one per profession (gender-neutral):
      *   animations/entity/citizen/{profession}.animation.json
+     *   fallback: animations/entity/citizen/unemployed.animation.json
      */
     public static String activeGender     = "male";
     public static String activeProfession = "unemployed";
@@ -48,8 +49,10 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
     private static final Map<String, ResourceLocation> ANIMATION_CACHE = new HashMap<>();
 
     public ReplacedCitizenModel() {
-        // "citizen" resolves to geo/entity/citizen.geo.json via DefaultedEntityGeoModel
-        super(ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID, "citizen"));
+        // "citizen/unemployed" pre-registers geo/entity/citizen/unemployed.geo.json as the
+        // GeckoLib base model.  This is also used as the fallback when a profession-specific
+        // file is missing, so the two must always agree.
+        super(ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID, "citizen/unemployed"));
     }
 
     // -------------------------------------------------------------------------
@@ -78,9 +81,9 @@ public class ReplacedCitizenModel extends DefaultedEntityGeoModel<ReplacedCitize
             if (resourceExists(loc)) return loc;
 
             LOGGER.warn("[CritterColonies] Missing geo file for profession '{}', " +
-                    "falling back to citizen.geo.json.", p);
+                    "falling back to unemployed.geo.json.", p);
             return ResourceLocation.fromNamespaceAndPath(Crittercolonies.MODID,
-                    "geo/entity/citizen.geo.json");
+                    "geo/entity/citizen/" + FALLBACK + ".geo.json");
         });
     }
 

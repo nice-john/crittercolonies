@@ -18,7 +18,8 @@
       "WebFetch(domain:files.minecraftforge.net)",
       "WebFetch(domain:github.com)",
       "Bash(del \"C:\\\\Users\\\\dad\\\\IdeaProjects\\\\CritterColonies\\\\src\\\\main\\\\resources\\\\META-INF\\\\mods.toml\")",
-      "WebFetch(domain:api.curseforge.com)"
+      "WebFetch(domain:api.curseforge.com)",
+      "Bash(git ls-tree *)"
     ]
   }
 }
