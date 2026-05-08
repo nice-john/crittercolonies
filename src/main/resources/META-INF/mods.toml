@@ -69,7 +69,13 @@ ordering = "NONE"
 side = "CLIENT"
 [[dependencies."${mod_id}"]]
 modId = "minecolonies"
-mandatory = true
+mandatory = false
 versionRange = "[1.1.8,)"
+ordering = "AFTER"
+side = "CLIENT"
+[[dependencies."${mod_id}"]]
+modId = "slimcolonies"
+mandatory = false
+versionRange = "[17.0.0,)"
 ordering = "AFTER"
 side = "CLIENT"

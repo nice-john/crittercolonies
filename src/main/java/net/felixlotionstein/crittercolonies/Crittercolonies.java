@@ -1,6 +1,7 @@
 package net.felixlotionstein.crittercolonies;
 
 import com.mojang.logging.LogUtils;
+import net.felixlotionstein.crittercolonies.compat.ColoniesCompat;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,6 +21,7 @@ public class Crittercolonies {
     public Crittercolonies() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         GeckoLib.initialize();
+        ColoniesCompat.init();
 
         modEventBus.addListener(this::commonSetup);
 
