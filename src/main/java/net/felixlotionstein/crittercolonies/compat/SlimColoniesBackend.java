@@ -13,9 +13,11 @@ import java.lang.reflect.Method;
  * Uses pure reflection — no no.monopixel.* imports — so this class
  * compiles and loads correctly even without SlimColonies on the classpath.
  *
- * All SlimColonies class/method references are resolved once in the
- * constructor and cached. Failures fall back to safe defaults ("male",
- * "unemployed") rather than crashing.
+ * Method references (isFemale, getCitizenDataView, getJob) are resolved once
+ * in the constructor and cached. The CITIZEN EntityType is resolved lazily on
+ * first call to {@link #citizenType()} because SlimColonies' RegisterEvent
+ * fires AFTER our mod constructor. Failures fall back to safe defaults
+ * ("male", "unemployed") rather than crashing.
  */
 public final class SlimColoniesBackend implements IColoniesBackend {
 
