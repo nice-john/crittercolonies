@@ -76,6 +76,6 @@ side = "CLIENT"
 [[dependencies."${mod_id}"]]
 modId = "slimcolonies"
 mandatory = false
-versionRange = "[17.0.0,)"
+versionRange = "[0,)"
 ordering = "AFTER"
 side = "CLIENT"

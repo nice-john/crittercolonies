@@ -3,7 +3,10 @@
     "allow": [
       "Bash(jar tf:*)",
       "Bash(jar xf:*)",
-      "Bash(xargs -I{} sh -c 'if [[ \"{}\" == \"META-INF/mods.toml\" ]]; then jar xf build/libs/crittercolonies-1.20.1-0.3.1-forge.jar \"{}\"; cat \"{}\"; fi')"
+      "Bash(xargs -I{} sh -c 'if [[ \"{}\" == \"META-INF/mods.toml\" ]]; then jar xf build/libs/crittercolonies-1.20.1-0.3.1-forge.jar \"{}\"; cat \"{}\"; fi')",
+      "Bash(git add *)",
+      "Bash(git reset *)",
+      "Bash(git commit -m ' *)"
     ]
   },
   "hooks": {
