@@ -25,7 +25,15 @@ public final class SlimColoniesBackend implements IColoniesBackend {
     private static final String ABSTRACT_CITIZEN_CLASS = "no.monopixel.slimcolonies.api.entity.citizen.AbstractEntityCitizen";
     private static final String DATA_VIEW_CLASS        = "no.monopixel.slimcolonies.api.colony.ICitizenDataView";
 
-    private final EntityType<?> citizenType;
+    /**
+     * Resolved on first call to {@link #citizenType()} — NOT in the constructor.
+     * SlimColonies populates ModEntities.CITIZEN during RegisterEvent, which fires
+     * AFTER the mod constructor (where ColoniesCompat.init() runs). Reading the
+     * field eagerly returned null and crashed the citizen renderer registration.
+     * volatile + double-checked locking gives lock-free reads after the first call.
+     */
+    private volatile EntityType<?> citizenType;
+    private volatile boolean       citizenTypeResolved;
 
     // Cached method handles — null if not found (defensive fallback).
     private final Method isFemaleMethod;
@@ -33,16 +41,9 @@ public final class SlimColoniesBackend implements IColoniesBackend {
     private final Method getJobMethod;
 
     public SlimColoniesBackend() {
-        // Resolve EntityType
-        EntityType<?> resolved = null;
-        try {
-            Class<?> modEntities = Class.forName(MOD_ENTITIES_CLASS);
-            Field citizenField = modEntities.getField("CITIZEN");
-            resolved = (EntityType<?>) citizenField.get(null);
-        } catch (Exception e) {
-            LOGGER.error("[CritterColonies] SlimColonies: failed to resolve CITIZEN entity type", e);
-        }
-        citizenType = resolved;
+        // Note: ModEntities.CITIZEN is resolved lazily in citizenType(). The Method
+        // lookups below resolve class definitions (not registry contents), so they
+        // are safe to do eagerly here.
 
         // Resolve isFemale()
         Method fem = null;
