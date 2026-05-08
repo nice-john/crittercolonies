@@ -78,7 +78,21 @@ public final class SlimColoniesBackend implements IColoniesBackend {
 
     @Override
     public EntityType<?> citizenType() {
-        return citizenType;
+        // Fast path — already resolved (success or null).
+        if (citizenTypeResolved) return citizenType;
+        synchronized (this) {
+            if (citizenTypeResolved) return citizenType;
+            try {
+                Class<?> modEntities = Class.forName(MOD_ENTITIES_CLASS);
+                Field citizenField = modEntities.getField("CITIZEN");
+                citizenType = (EntityType<?>) citizenField.get(null);
+            } catch (Exception e) {
+                LOGGER.error("[CritterColonies] SlimColonies: failed to resolve CITIZEN entity type", e);
+                citizenType = null;
+            }
+            citizenTypeResolved = true;
+            return citizenType;
+        }
     }
 
     /** SlimColonies has no raiders. */
