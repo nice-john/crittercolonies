@@ -1,0 +1,68 @@
+Copyright (c) 2026 Felix Lotionstein (nice-john)
+All Rights Reserved.
+
+==============================================================================
+SCOPE
+==============================================================================
+
+This license applies to all asset files distributed with Critter Colonies,
+including but not limited to:
+
+  - All files under src/main/resources/assets/crittercolonies/textures/
+    (e.g. .png citizen overlays, base textures, pirate textures)
+  - All files under src/main/resources/assets/crittercolonies/geo/
+    (.geo.json GeckoLib geometry models)
+  - All files under src/main/resources/assets/crittercolonies/animations/
+    (.animation.json GeckoLib animation definitions)
+  - Any other creative output (sounds, additional textures, models) bundled
+    in the assets directory regardless of file extension
+
+These files are referred to below collectively as "the Assets."
+
+The Java source code under src/main/java/ is NOT covered by this license.
+That code is licensed under the GNU General Public License v3.0 — see
+the LICENSE file in this repository.
+
+==============================================================================
+PERMITTED USE
+==============================================================================
+
+You MAY:
+
+  1. Install and use the official, unmodified Critter Colonies mod JAR in
+     a Minecraft client or dedicated server for personal play.
+
+  2. Include the official, unmodified Critter Colonies mod JAR in a modpack
+     (public or private) provided that the JAR is distributed in its
+     original form without modification to the Assets.
+
+==============================================================================
+PROHIBITED USE
+==============================================================================
+
+You MAY NOT, without prior written permission from the copyright holder:
+
+  1. Redistribute the Assets independently of the official mod JAR.
+  2. Modify, adapt, retexture, or create derivative works from the Assets.
+  3. Use the Assets in any other Minecraft mod, resource pack, datapack,
+     texture pack, or third-party project.
+  4. Extract or reverse-engineer the Assets from the mod JAR for use in
+     any context other than running the official Critter Colonies mod.
+  5. Reuse the Assets for promotional, commercial, or monetized purposes
+     unrelated to the official Critter Colonies mod.
+
+==============================================================================
+NO IMPLIED LICENSE
+==============================================================================
+
+The fact that this repository is publicly visible on GitHub or any other
+hosting platform does NOT grant a license to the Assets. The source code
+being open under GPL 3.0 does NOT extend to the Assets.
+
+==============================================================================
+CONTACT
+==============================================================================
+
+For licensing inquiries — permission to use Assets in another project,
+custom commissions, modpack questions, etc. — contact the author through
+the project's GitHub repository.
