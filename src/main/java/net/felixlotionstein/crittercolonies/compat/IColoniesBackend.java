@@ -1,7 +1,9 @@
 package net.felixlotionstein.crittercolonies.compat;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Contract for whichever colonies mod is present at runtime.
@@ -27,4 +29,14 @@ public interface IColoniesBackend {
      * (e.g. {@code "baker"}, {@code "miner"}, {@code "unemployed"}).
      */
     String profession(LivingEntity entity);
+
+    /**
+     * Returns the ResourceLocation of the status/interaction icon that should be drawn
+     * above this citizen's head, or {@code null} when no icon is currently visible.
+     *
+     * MineColonies 1.20.1 calls this an "interaction icon" — it appears when the
+     * citizen has a problem the player needs to address (recruit, missing tool,
+     * hungry, raided, etc.). Both colonies mods expose the same conceptual data.
+     */
+    @Nullable ResourceLocation statusIcon(LivingEntity entity);
 }

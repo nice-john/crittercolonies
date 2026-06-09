@@ -1,8 +1,10 @@
 package net.felixlotionstein.crittercolonies.compat;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.fml.ModList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -82,6 +84,16 @@ public final class ColoniesCompat {
      */
     public static String getProfession(LivingEntity entity) {
         return backend.profession(entity);
+    }
+
+    /**
+     * Returns the texture path of the icon currently displayed above this citizen's
+     * head (recruit, hungry, raided, missing tool, etc.), or {@code null} if no
+     * icon is currently visible. Returning {@code null} suppresses the head icon.
+     */
+    @Nullable
+    public static ResourceLocation getStatusIcon(LivingEntity entity) {
+        return backend.statusIcon(entity);
     }
 
     // -------------------------------------------------------------------------

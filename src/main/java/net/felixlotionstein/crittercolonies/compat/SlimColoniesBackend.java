@@ -1,8 +1,10 @@
 package net.felixlotionstein.crittercolonies.compat;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
@@ -41,6 +43,8 @@ public final class SlimColoniesBackend implements IColoniesBackend {
     private final Method isFemaleMethod;
     private final Method getCitizenDataViewMethod;
     private final Method getJobMethod;
+    private final Method hasVisibleInteractionsMethod;
+    private final Method getInteractionIconMethod;
 
     public SlimColoniesBackend() {
         // Note: ModEntities.CITIZEN is resolved lazily in citizenType(). The Method
@@ -76,6 +80,20 @@ public final class SlimColoniesBackend implements IColoniesBackend {
             LOGGER.warn("[CritterColonies] SlimColonies: getJob() not found, profession will default to unemployed");
         }
         getJobMethod = job;
+
+        // Resolve hasVisibleInteractions() and getInteractionIcon() on ICitizenDataView.
+        // Both are needed together — if either is missing, head-icon rendering is disabled.
+        // SlimColonies forks the 1.20.1 MineColonies API so these names should still hold.
+        Method has = null, icon = null;
+        try {
+            Class<?> dataView = Class.forName(DATA_VIEW_CLASS);
+            has  = dataView.getMethod("hasVisibleInteractions");
+            icon = dataView.getMethod("getInteractionIcon");
+        } catch (Exception e) {
+            LOGGER.warn("[CritterColonies] SlimColonies: interaction-icon methods not found, citizen head icons will be hidden");
+        }
+        hasVisibleInteractionsMethod = has;
+        getInteractionIconMethod     = icon;
     }
 
     @Override
@@ -123,6 +141,22 @@ public final class SlimColoniesBackend implements IColoniesBackend {
             return ColoniesCompat.cleanJobString(raw != null ? raw : "");
         } catch (Exception e) {
             return "unemployed";
+        }
+    }
+
+    @Override
+    @Nullable
+    public ResourceLocation statusIcon(LivingEntity entity) {
+        if (getCitizenDataViewMethod == null
+                || hasVisibleInteractionsMethod == null
+                || getInteractionIconMethod == null) return null;
+        try {
+            Object dataView = getCitizenDataViewMethod.invoke(entity);
+            if (dataView == null) return null;
+            if (!(boolean) hasVisibleInteractionsMethod.invoke(dataView)) return null;
+            return (ResourceLocation) getInteractionIconMethod.invoke(dataView);
+        } catch (Exception e) {
+            return null;
         }
     }
 }

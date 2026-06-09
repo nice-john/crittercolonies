@@ -1,14 +1,20 @@
 package net.felixlotionstein.crittercolonies.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.felixlotionstein.crittercolonies.anim.ReplacedCitizenAnim;
 import net.felixlotionstein.crittercolonies.client.model.entity.ReplacedCitizenModel;
+import net.felixlotionstein.crittercolonies.client.renderer.CritterRenderTypes;
 import net.felixlotionstein.crittercolonies.client.renderer.layer.CitizenOverlayLayer;
 import net.felixlotionstein.crittercolonies.compat.ColoniesCompat;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Matrix4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoReplacedEntityRenderer;
 
@@ -65,5 +71,56 @@ public class ReplacedCitizenRenderer
         super.scaleModelForRender(widthScale, heightScale, poseStack, animatable, model,
                 isReRender, partialTick, packedLight, packedOverlay);
         poseStack.mulPose(Axis.YP.rotationDegrees(-180));
+    }
+
+    // -------------------------------------------------------------------------
+    // Status icon — recreates the MineColonies head-icon rendering that we
+    // lose by replacing the entire renderer. Without this, the alert / recruit
+    // / hungry / raided icons would never appear on critter-citizens.
+    // -------------------------------------------------------------------------
+
+    /** Distance squared past which the icon is too small to be useful — culling cutoff. */
+    private static final double ICON_RENDER_DISTANCE_SQR = 4096.0;
+
+    /** Y-offset added to the name-tag height, in world units. */
+    private static final float ICON_Y_OFFSET = 0.3f;
+
+    /** Scale used by MineColonies for the icon quad (negative flips it to face camera). */
+    private static final float ICON_SCALE = -0.025f;
+
+    /** Half-width of the icon quad in (post-scale) pixels. */
+    private static final float ICON_HALF = 5f;
+
+    /** Full height of the icon quad in (post-scale) pixels. */
+    private static final float ICON_HEIGHT = 10f;
+
+    @Override
+    protected void renderNameTag(LivingEntity entity, Component name, PoseStack poseStack,
+                                  MultiBufferSource bufferSource, int packedLight) {
+        super.renderNameTag(entity, name, poseStack, bufferSource, packedLight);
+
+        ResourceLocation icon = ColoniesCompat.getStatusIcon(entity);
+        if (icon == null) return;
+
+        double distSqr = this.entityRenderDispatcher.distanceToSqr(
+                entity.getX(), entity.getY(), entity.getZ());
+        if (distSqr > ICON_RENDER_DISTANCE_SQR) return;
+
+        poseStack.pushPose();
+        poseStack.translate(0, entity.getNameTagOffsetY() + ICON_Y_OFFSET, 0);
+        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.scale(ICON_SCALE, ICON_SCALE, ICON_SCALE);
+
+        RenderType type    = CritterRenderTypes.statusIcon(icon);
+        VertexConsumer buf = bufferSource.getBuffer(type);
+        Matrix4f pose      = poseStack.last().pose();
+
+        // POSITION_TEX quad: top-left, bottom-left, bottom-right, top-right (CCW).
+        buf.vertex(pose, -ICON_HALF,           0f, 0f).uv(0f, 0f).endVertex();
+        buf.vertex(pose, -ICON_HALF, ICON_HEIGHT, 0f).uv(0f, 1f).endVertex();
+        buf.vertex(pose,  ICON_HALF, ICON_HEIGHT, 0f).uv(1f, 1f).endVertex();
+        buf.vertex(pose,  ICON_HALF,           0f, 0f).uv(1f, 0f).endVertex();
+
+        poseStack.popPose();
     }
 }
